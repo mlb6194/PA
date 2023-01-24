@@ -1,2 +1,2 @@
-# PA
-files for Predictive analytics courses
+# courses
+Predictive Analytics courses 

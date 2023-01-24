@@ -1,0 +1,532 @@
+---
+title: "Introduction to Predictive analytics (Regression) part2"
+author: "Michael Brett"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\section{Regression}
+
+Regression is a statistical technique that is used for predictive analytics, with the goal of understanding the relationship between a dependent variable and one or more independent variables. It is used to predict a continuous outcome variable (such as price, temperature, etc.) based on one or more input variables. There are several types of regression, including linear regression, logistic regression, and polynomial regression.
+
+In the context of machine learning, regression is considered a supervised learning technique, as it involves using labeled training data to learn a mapping from input variables to output variables. The goal of the model is to minimize the difference between the predicted values and the actual values in the training data. Once trained, the model can be used to make predictions on new, unseen data. Regression models can be used in a wide range of applications, such as forecasting, trend analysis, and causal inference.
+
+Supervised and unsupervised machine learning are two different approaches to training models in R.
+
+\textbf{Supervised learning} is a method where a model is trained on a labeled dataset, with input-output pairs. The model learns to predict the output based on the input. Common types of supervised learning models in R include linear regression, logistic regression, decision trees, and random forests.
+
+\textbf{Unsupervised learning}, on the other hand, is a method where a model is trained on an unlabeled dataset. The model is not given any specific outputs to predict, but instead learns to identify patterns and structure in the data. Common types of unsupervised learning models in R include k-means clustering, hierarchical clustering, and principal component analysis (PCA).
+
+In summary, \textbf{supervised learning} is used when the desired output is known, and the model is trained to predict that output. Unsupervised learning is used when the desired output is not known, and the model is trained to identify patterns and structure in the data.
+
+Types of regression we will look at :
+
+\textbf{Linear Regression:} The most basic and widely used regression model. It assumes a linear relationship between the predictor and response variables. Pros: easy to understand and interpret, fast to fit and predict. Cons: sensitive to outliers and assumes a linear relationship, may not work well with non-linear data.
+
+\textbf{Polynomial Regression:} A extension of linear regression that allows for a non-linear relationship between the predictor and response variables. Pros: can model non-linear relationships, easy to implement. Cons: sensitive to outliers, may not work well with high-degree polynomials, may not work well with small datasets.
+
+\textbf{Logistic Regression:} A type of regression used for binary classification problems. Pros: easy to implement and interpret, efficient to train. Cons: assumes linear relationship between predictors and log-odds of the response, may not work well with non-linear data.
+
+\textbf{Decision Tree:} A non-parametric method used for both regression and classification problems. Pros: easy to use and interpret, can handle non-linear relationships and missing data. Cons: prone to overfitting, may not work well with high-dimensional data.
+
+\textbf{Random Forest:} An ensemble method that combines multiple decision trees. Pros: can handle non-linear relationships and missing data, less prone to overfitting than decision trees. Cons: more complex to interpret than single decision trees.
+
+\textbf{Support Vector Machines} (SVMs): A non-probabilistic method used for both regression and classification problems. Pros: can handle non-linear relationships and high-dimensional data, efficient to train. Cons: sensitive to the choice of kernel and parameters, may not work well with small datasets.
+
+When choosing a regression model for a given dataset, it is important to consider the complexity of the model relative to the complexity of the data. For example, if the data appears to have a linear relationship, a linear regression model may be the best choice. If the data appears to have a non-linear relationship, a polynomial or decision tree model may be more appropriate. Additionally, it is important to consider the size and dimensionality of the data. Decision trees and random forests are suitable for large datasets with many features, while SVM may not work well with large datasets. It's also important to consider the interpretability of the model, some methods like decision tree and random forest are more interpretable than other methods like SVM.
+
+This section looks at using a single variable to predict the value of adependent variable.
+
+The following example creates a linear regression model using an in-built data set, creating a scatter plot, then using ggplot and geom_smooth to create the regression line, extracting the equation, and creating a table of predicted values:
+
+```{r}
+# Load the "mtcars" data set
+data(mtcars)
+
+# Install the ggplot2 package if it is not already installed
+#install.packages("ggplot2")
+
+# Load the ggplot2 package
+library(ggplot2)
+
+# Create a scatter plot of mpg (y-axis) vs. hp (x-axis) using ggplot
+ggplot(mtcars, aes(x=hp, y=mpg)) +
+  geom_point() +
+  geom_smooth(method="lm", se=FALSE, color="red")
+```
+
+```{r}
+# Fit a linear regression model to the data - predicting mpg by horsepower
+model <- lm(mpg ~ hp, data = mtcars)
+```
+
+One way to display the predicted results from a linear regression model in a table in R using the mtcars dataset is to use the cbind() function to combine the original data with the predicted values. For example:
+
+Predict mpg for a range of weights This line of code feeds a series of values into the model and records the results of predicted mpg for each value of horsepower put throught the model
+
+```{r}
+# Predict mpg for a range of weights
+predicted_mpg <- predict(model, data.frame(hp = seq(2, 5.1, by = 0.1)))
+```
+
+Combine original data with predicted values
+
+```{r}
+# Combine original data with predicted values
+mtcars_with_predictions <- cbind(mtcars, predicted_mpg)
+```
+
+View the first few rows of the combined data
+
+```{r}
+head(mtcars_with_predictions)
+```
+
+This will display the first few rows of the combined data, including the original mpg values and the predicted mpg values for the range of weights specified.
+
+Alternatively, we can use the data.frame() function to create a new data frame with the original data and the predicted values, and then use the View() function to display the data in a table format. For example:
+
+Create a new data frame with the original data and the predicted values
+
+```{r}
+mtcars_with_predictions <- data.frame(mtcars, predicted_mpg)
+```
+
+Use View() function to display the data in a table format
+
+```{r}
+#View(mtcars_with_predictions)
+```
+
+This will open a new window with a table displaying the data in a tabular format, where you can easily explore the original data, along with the predicted values.
+
+Alternatively We can use the predict() command to predict the response (mpg) based on predictor values of hp (horsepower).
+
+```{r}
+predict(model, data.frame(hp = 110))
+
+```
+
+We can also predict the mpg for a range of weights, for example, between 2 and 5. To do this, we can use the following command:
+
+```{r}
+predict(model, data.frame(hp = seq(2, 5, by = 0.1)))
+```
+
+Additionally, the predict() command can also include the interval predictions, by including the argument interval = "confidence" or interval = "prediction".
+
+```{r}
+predict(model, newdata = data.frame(hp = 3.5), interval = "confidence")
+
+# for a series of intputs
+predict(model, newdata = data.frame(hp = seq(2,6, by =0.5)), interval = "confidence")
+
+```
+
+The predict() function allows to predict the value of the response variable for new data based on a previously fitted model and it is a fundamental tool for evaluating the performance of our model.
+
+\section{Linear Regression model output}
+
+```{r}
+# Evaluate the significance of the predictors
+summary(model)
+```
+
+# The output from the model includes the coefficients of the predictors, the R-squared value, and the p-values for testing the null hypothesis that the coefficient is equal to zero.
+
+Looking at the residuals or the errors, the more symmetric the histogram of the residuals the more accurate the prrdictions based on the dataset. Ideally the median should be as close to zero with Q1,Q3 and the extreme values equal distance from the median.
+
+```{r}
+hist(model$residuals)
+```
+
+The summary(model) will provide the information on the coefficients, R-squared value, p-values and other information about the model. The p-value is used to check the significance of predictors. If p-value is less than 0.05, it means the predictor is significant else the predcitor does not contribute to the model in a meaningful way
+
+geom_smooth() uses the "lm" method by default, which stands for linear model, so it will fit a linear regression line to the data. The "se" argument is set to FALSE to remove the shaded confidence interval around the line.
+
+alternate displays of the model output can be used for presenting the model output in R markdown without displaying the orignal R ouput, which you may not wish to include in your document.
+
+```{r}
+library(jtools)
+summ(model)
+```
+
+Or with confidence intervals, default is 95%
+
+```{r}
+library(jtools)
+summ(model, confint = TRUE, digits = 3)
+```
+
+For increased confidence you can set the confidence interval to 99%
+
+```{r}
+summ(model, confint = TRUE, ci.width = .99,digits=3)
+```
+
+Or remove model information:
+
+```{r}
+summ(model, model.info = FALSE, digits = 3)
+```
+
+```{r}
+ggplot(mtcars, aes(x=hp, y=mpg, colour = factor(cyl))) +
+  geom_point() +
+  geom_smooth(method="lm", se=TRUE, color="red")
+```
+
+```{=tex}
+\newpage
+\section{Mulitple Linear Regression}
+```
+Multiple Linear Regression in R: Model Building and Analysis
+
+Multiple linear regression is a statistical technique used to model the relationship between a numerical dependent variable and multiple independent variables.
+
+In this lesson, we will be using the "mtcars" dataset that is built-in to R to demonstrate how to build and analyze multiple linear regression models.
+
+First, let's load the dataset and take a look at the first few rows:
+
+```{r}
+data("mtcars")
+head(mtcars)
+```
+
+To build a multiple linear regression model, we will use the "lm()" function. Let's say we want to predict "mpg" based on "wt", "hp", and "disp".
+
+```{r}
+model <- lm(mpg ~ wt + hp + disp, data = mtcars)
+summary(model)
+```
+
+\textbf{Model Evaluation:} To evaluate the performance of the model, we can use various statistical measures such as R-squared, adjusted R-squared, p-values, and t-values.
+
+R-squared value represents the proportion of the variance in the dependent variable that is explained by the independent variables.
+
+The adjusted R-squared value is similar to R-squared but it penalizes models with many variables and high correlation between them.
+
+p-values indicate the level of statistical significance of the coefficients. A p-value less than 0.05 indicates that the coefficient is statistically significant.
+
+t-values represents the ratio of the coefficient estimate to its standard error
+
+Model Diagnostics:
+
+It's important to check for any violations of the assumptions of linear regression such as normality of errors, constant variance and independence of errors, and linearity.
+
+We can use the residuals vs fitted plot to check for linearity and constant variance. The normal probability plot can be used to check for normality of errors The influence plot can be used to check for outliers and influential observations
+
+Model Improvement:
+
+If the model does not meet the assumptions we can try to improve it by removing outliers and influential observations, transforming variables, and adding interaction terms We can also try to include or exclude variables to improve the model by looking at the p-values, t-values, and the R-squared value
+
+Real-world Applications: Multiple linear regression can be used in a variety of real-world applications such as finance, economics, marketing, and engineering.For example, in finance, multiple linear regression can be used to predict stock prices based on various financial indicators such as earnings per share, price-to-earnings ratio, and dividend yield. In marketing, it can be used to predict sales based on advertising expenditure, promotions, and consumer demographics.
+
+This is a basic overview of how to use multiple linear regression models in R. With a little practice, you can quickly master the basics and start using multiple linear regression to make predictions and analyze your data.
+
+\section{Polynomial Regression}
+
+Here is an example of how to create a polynomial regression model in R using the built-in dataset "mtcars":
+
+```{r}
+# Load the necessary libraries
+library(ggplot2)
+library(plyr)
+library(dplyr)
+```
+
+```{r}
+# Fit a polynomial regression model
+Poly_model <- lm(mpg ~ poly(wt, 2), data = mtcars, )
+
+# Print the summary of the model
+summary(Poly_model)
+```
+
+or as above
+
+```{r}
+library(jtools)
+summ(Poly_model, confint = TRUE, digits = 3)
+```
+
+The above code will fit a polynomial regression model using the "wt" variable as the predictor and "mpg" as the response. The "poly" function is used to specify the degree of the polynomial (2 in this case). The "summary" function is used to print the summary of the model, which includes the coefficients, t-values, and p-values for each term in the model.
+
+To plot the model, you can use the "ggplot" function:
+
+```{r}
+# Plot the model
+ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+  geom_point() +
+  geom_smooth()+
+  geom_line(aes(y = predict(Poly_model)), color = "red", linewidth = 1) +
+  ggtitle("Polynomial Regression Model") +
+  xlab("Weight") +
+  ylab("Miles per Gallon")
+```
+
+This will create a scatter plot of the data with the regression line in red.
+
+To create a table of predictions, you can use the "predict" function:
+
+```{r}
+# Create a table of predictions
+predictions <- data.frame(wt = mtcars$wt,
+                         mpg = predict(model))
+
+predictions
+```
+
+This will create a new data frame with the original "wt" values and the corresponding predicted "mpg" values based on the model. You can then use the "head" or "tail" function to view the first or last few rows of the table, or use the "write.csv" function to export the table to a CSV file.
+
+\section{Logistic}
+
+Intro to logistic regression
+
+    Logistic regression is a technique used to model the relationship between a binary dependent variable and one or more independent variables.
+
+    In this lesson, we will be using the "titanic" dataset that is built-in to R.
+
+```{r}
+data("Titanic")
+```
+
+    Let's first take a look at the structure of the data and the first few rows
+
+```{r}
+str(Titanic)
+head(Titanic)
+```
+
+    In this dataset, the variable "survived" is our binary dependent variable (1 = survived, 0 = did not survive) and we will use "pclass", "age", and "sex" as our independent variables.
+
+    Before we build our model, we need to prepare our data by converting "sex" to a numeric variable and handling any missing values.
+
+```{r}
+# Convert "sex" to numeric
+#Titanic$sex <- ifelse(Titanic$sex == "male", 0, 1)
+
+# Handle missing values
+#Titanic$age[is.na(Titanic$age)] <- mean(Titanic$age, na.rm = TRUE)
+```
+
+    Now we can build our logistic regression model using the "glm()" function
+
+```{r}
+
+lmodel <- glm(Survived ~ Class + Age + Sex, data = Titanic, family = binomial)
+summary(model)
+```
+
+```{r}
+effect_plot(lmodel, pred = Class, interval = TRUE, plot.points = TRUE, 
+            jitter = 0.1)
+
+```
+
+    To evaluate the performance of our model, we can use the "deviance" and "AIC" values
+
+```{r}
+deviance <- deviance(model)
+AIC <- AIC(model)
+deviance
+AIC
+```
+
+    Let's create a plot of the model's predictions against the actual survival outcomes
+
+```{r}
+#library(ggplot2)
+#ggplot(data = Titanic, aes(x = predict(model), y = survived)) +
+ # geom_point(a = .2) +
+  #geom_abline(intercept = 0, slope = 1)
+```
+
+    We can also create a confusion matrix to see how well our model is performing
+
+```{r}
+
+#library(caret)
+#predictions <- predict(model, type = "response")
+#predictions <- ifelse(predictions > 0.5, 1, 0)
+#confusionMatrix(predictions, Titanic$Survived)
+```
+
+    Finally, we can use our model to make predictions on new data
+
+```{r}
+#newdata <- data.frame(Class = 2, Age = 35, Sex = 0)
+#predict(model, newdata, type = "response")
+```
+
+This is a basic overview of how to use logistic regression in R. In practice, it's important to evaluate the performance of the model using various techniques, and also consider other things such as overfitting and confounding variables.
+
+\section{Multiple Logistic regression}
+
+This is an example of how to create a multiple logistic regression model in R using the built-in dataset "mtcars":
+
+```{r}
+# Load the necessary libraries
+library(ggplot2)
+library(dplyr)
+
+# Fit a multiple logistic regression model
+Mlog_model <- glm(vs ~ wt + hp + qsec, data = mtcars, family = binomial)
+
+# Print the summary of the model
+summary(Mlog_model)
+```
+
+The above code will fit a multiple logistic regression model using the "wt", "hp", and "qsec" variables as predictors and "vs" (0 or 1) as the response. The "glm" function is used to fit the model with the "binomial" family to indicate that this is a logistic regression model. The "summary" function is used to print the summary of the model, which includes the coefficients, t-values, and p-values for each term in the model.
+
+To plot the model, you can use the "ggplot" function with the "geom_point" and "geom_jitter" options to show the data points:
+
+```{r}
+# Plot the model
+ggplot(data = mtcars, aes(x = wt, y = vs)) +
+  geom_point(aes(color = factor(vs))) +
+  geom_jitter(width = 0.1) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial"), se = T) +
+  ggtitle("Multiple Logistic Regression Model") +
+  xlab("Weight") +
+  ylab("VS")
+```
+
+This will create a scatter plot of the data with the logistic regression line in red.
+
+To create a table of predictions, you can use the "predict" function with the "type = 'response'" option:
+
+```{r}
+# Create a table of predictions
+mlg_predictions <- data.frame(wt = mtcars$wt,
+                         hp = mtcars$hp,
+                         qsec = mtcars$qsec,
+                         vs = predict(model, type = "response"))
+mlg_predictions
+```
+
+This will create a new data frame with the original "wt", "hp" and "qsec" values and the corresponding predicted "vs" values based on the model. You can then use the "head" or "tail" function to view the first or last few rows of the table, or use the "write.csv" function to export the table to a CSV file.
+
+It's also important to interpret the output of the model. The coefficients, t-values, and p-values tell us the strength and significance of each predictor variable in relation to the response variable. A p-value of less than 0.05 indicates that the predictor variable is likely to be a significant contributor to the model. The coefficients of the predictors indicate the direction and magnitude of the effect of each predictor on the response. A positive coefficient means that an increase in the predictor variable is associated with an increase in the probability of the response variable, while a negative coefficient means that an increase in the predictor variable is associated with a decrease in the probability of the response variable.
+
+In this case, we can see that 'wt', 'hp' and 'qsec' have a p-values less than 0.05 and thus are significant contributors to the model. The 'wt' variable has negative coefficient which means increase in weight will decrease the probability of 'vs'
+
+Here is an example of how to create a decision tree model in R using the built-in dataset "mtcars":
+
+```{r}
+# Load the necessary libraries
+library(rpart)
+library(rpart.plot)
+
+# Fit a decision tree model
+dt_model <- rpart(vs ~ wt + hp + qsec, data = mtcars, method = "class")
+
+# Print the summary of the model
+print(dt_model)
+```
+
+The above code will fit a decision tree model using the "wt", "hp", and "qsec" variables as predictors and "vs" (0 or 1) as the response. The "rpart" function is used to fit the decision tree model with the "class" method to indicate that this is a classification problem. The "print" function is used to print the summary of the model, which includes the structure of the tree, the number of observations at each node, and the predicted class at each node.
+
+To plot the model, you can use the "rpart.plot" function:
+
+```{r}
+# Plot the model
+#rpart.plot(model)
+```
+
+This will create a graphical representation of the decision tree, where each internal node represents a decision based on one of the predictor variables and each leaf node represents a predicted class.
+
+To create a table of outcomes, you can use the "predict" function with the "type = 'class'" option:
+
+# Create a table of outcomes
+
+outcomes \<- data.frame(wt = mtcars$wt, hp = mtcars$hp, qsec = mtcars\$qsec, vs = predict(model, type = "class"))
+
+This will create a new data frame with the original "wt", "hp" and "qsec" values and the corresponding predicted "vs" values based on the model. You can then use the "head" or "tail" function to view the first or last few rows of the table, or use the "write.csv" function to export the table to a CSV file.
+
+When interpreting the output of a decision tree model, it is important to consider the structure of the tree and the number of observations at each node. The tree structure shows the decisions that were made based on the predictor variables, and the number of observations at each node shows the amount of data that was used to make each decision. The predicted class at each leaf node indicates the final outcome of the decision tree model. Additionally, it's important to consider the accuracy of the model as well as the interpretability of it.
+
+In this case, we can see that 'wt' is the most important variable for the decision tree model because it's used as the root node. The model predicts the outcome with a high accuracy as the number of observations at the leaves nodes is high. However, it's important to note that decision trees are sensitive to overfitting and it's important to prune the tree or use other techniques to avoid it. create a lesson using R to introduce random forest models in R with examples using built in data sets
+
+Random Forest is an ensemble method that combines multiple decision trees to make more accurate and robust predictions. Here is an example of how to create a random forest model in R using the built-in dataset "mtcars":
+
+# Load the necessary libraries
+
+```{r}
+library(randomForest)
+
+# Fit a random forest model
+rf_model <- randomForest(vs ~ wt + hp + qsec, data = mtcars, ntree = 500)
+
+# Print the summary of the model
+print(rf_model)
+
+```
+
+The above code will fit a random forest model using the "wt", "hp", and "qsec" variables as predictors and "vs" (0 or 1) as the response. The "randomForest" function is used to fit the model and the "ntree" option is used to specify the number of trees in the forest (500 in this case). The "print" function is used to print the summary of the model, which includes the overall accuracy, the out-of-bag (OOB) error, and the importance of each predictor variable.
+
+To plot the importance of each predictor variable, you can use the "varImpPlot" function:
+
+```{r}
+# Plot the importance of each predictor variable
+varImpPlot(rf_model)
+```
+
+This will create a bar plot of the importance of each predictor variable in the model.
+
+To create a table of predictions, you can use the "predict" function with the "type = 'response'" option:
+
+```{r}
+# Create a table of predictions
+rf_predictions <- data.frame(wt = mtcars$wt,
+                         hp = mtcars$hp,
+                         qsec = mtcars$qsec,
+                         vs = predict(rf_model, type = "response"))
+rf_predictions
+```
+
+This will create a new data frame with the original "wt", "hp" and "qsec" values and the corresponding predicted "vs" values based on the model. You can then use the "head" or "tail" function to view the first or last few rows of the table, or use the "write.csv" function to export the table to a CSV file.
+
+When interpreting the output of a random forest model, it is important to consider the overall accuracy and the out-of-bag (OOB) error, which estimates the accuracy of the model on new, unseen data. The importance of each predictor variable tells
+
+\section{Introduction to R Markdown}
+
+R Markdown is a powerful tool that allows you to create professional reports that combine text, R code, and visualizations.
+
+It provides an easy way to keep track of your analysis and results in one place, making it easier to share and reproduce your work.
+
+To create a new R Markdown document in R Studio, go to File \> New File \> R Markdown.
+
+This will open up a template for an R Markdown document, which includes a YAML header, a markdown section for text, and a code chunk for R code.
+
+The YAML header is used to set the document metadata, such as the title, author, and date.
+
+Markdown is used to format the text in the document.
+
+R code is included in code chunks, which are denoted by {r} at the beginning and end of the code.
+
+You can run the code chunks and include the results in the document by clicking the "Knit" button or by using the keyboard shortcut "Cmd + Shift + K" (Mac) or "Ctrl + Shift + K" (Windows/Linux).
+
+To include visualizations in your R Markdown document, you can use the "ggplot2" library to create plots and include them in your document by using the knitr package:
+
+```{r, echo=FALSE}
+library(ggplot2)
+ggplot(data = mtcars, aes(x = wt, y = mpg)) + geom_point()
+```
+
+To format your text in markdown, you can use headings, bold, italic, bullet points etc.
+
+This is **bold** text This is *italic* text - This - is - a bullet - point
+
+Once you have finished your analysis and written your report, you can export your R Markdown document to a variety of formats including pdf, html, word, and more by clicking the "Knit" button and selecting the desired format. R Markdown is a versatile and flexible tool that can be used for a wide range of projects, from simple data analysis to creating complex reports. With a little practice, you can quickly master the basics and start using R Markdown to make your work more efficient and effective.
+
+\section{Creating professional reports using R Markdown}
+
+\section{Deploying the model and report for real-world usage}
+
+\section{Hands-on practice and real-world examples}
+
