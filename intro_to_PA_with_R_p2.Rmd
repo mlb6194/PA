@@ -204,7 +204,7 @@ summary(linear_model)
 
 The summary(model) will provide the information on the coefficients, R-squared value, p-values and other information about the model. The p-value is used to check the significance of predictors. If p-value is less than 0.05, it means the predictor is significant else the predictor does not contribute to the model in a meaningful way
 
-geom_smooth() uses the "lm" method by default, which stands for linear model, so it will fit a linear regression line to the data. The "se" argument is set to FALSE to remove the shaded confidence interval around the line.
+
 
 Looking at the residuals or the errors, the more symmetric the histogram of the residuals the more Accurate the predictions based on the dataset. Ideally the median should be as close to zero with Q1,Q3 and the extreme values equal distance from the median. Plotting the histogram of the residuals :
 
@@ -212,7 +212,7 @@ Looking at the residuals or the errors, the more symmetric the histogram of the 
 hist(linear_model$residuals)
 ```
 
-The summary(model) will provide the information on the coefficients, R-squared value, p-values and other information about the model. The p-value is used to check the significance of predictors. If p-value is less than 0.05, it means the predictor is significant else the predictor does not contribute to the model in a meaningful way
+The summary(Linear_model) command will provide the information on the coefficients, R-squared value, p-values and other information about the model. The p-value is used to check the significance of predictors. If p-value is less than 0.05, it means the predictor is significant else the predictor does not contribute to the model in a meaningful way
 
 geom_smooth() uses the "lm" method by default, which stands for linear model, so it will fit a linear regression line to the data. The "se" argument is set to FALSE to remove the shaded confidence interval around the line.
 
@@ -230,7 +230,8 @@ library(jtools)
 summ(linear_model, confint = TRUE, digits = 3)
 ```
 
-To display the confidence intervals on the scatter plot change the 'se' arguement to true
+To display the confidence intervals on the scatter plot change the 'se' argument to true.
+The command 'geom_smooth()' uses the "lm" method by default, which stands for linear model, so it will fit a linear regression line to the data. The "se" argument is set to FALSE to remove the shaded confidence interval around the line.
 
 ```{r}
 ggplot(mtcars, aes(x=hp, y=mpg, colour = factor(cyl))) +
