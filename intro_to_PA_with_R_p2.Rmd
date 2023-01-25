@@ -49,6 +49,8 @@ The following example creates a linear regression model using an in-built data s
 
 We will use the built in data set "mtcars"
 
+The code snippets are higlighted in the grey boxes, you can copy and paste the code into your R console. The \# is used to comment inside the code snippets.
+
 ```{r}
 # Load the "mtcars" data set
 data(mtcars)
@@ -56,7 +58,7 @@ data(mtcars)
 
 ```{r}
 #get a summary of the data set 
-summary(mtcars)
+#summary(mtcars)
 ```
 
 View the dataset
@@ -202,14 +204,21 @@ Evaluate the R output from the model:
 summary(linear_model)
 ```
 
-The summary(model) will provide the information on the coefficients, R-squared value, p-values and other information about the model. The p-value is used to check the significance of predictors. If p-value is less than 0.05, it means the predictor is significant else the predictor does not contribute to the model in a meaningful way
+The summary(model) will provide the information on the coefficients, R-squared value, p-values and other information about the model. The p-value is used to check the significance of predictors. If p-value is less than 0.05, it means the predictor is significant else the predictor does not contribute to the model in a meaningful way.
 
+```{r}
+linear_model$coefficients
+```
 
+The coefficients in the model are significant,the p value for both is \< 0.05. R gives each coefficient a significance level of \*\*\*, Horsepower is statistically significant as a predictor for miles per gallon.
 
-Looking at the residuals or the errors, the more symmetric the histogram of the residuals the more Accurate the predictions based on the dataset. Ideally the median should be as close to zero with Q1,Q3 and the extreme values equal distance from the median. Plotting the histogram of the residuals :
+R squared is 0.6024: horsepower accounts for 60% of the relationship between mpg and horsepower.
+
+Looking at the residuals or the errors, the more symmetric the histogram of the residuals the more accurate the predictions based on the dataset. Ideally the median should be as close to zero with Q1,Q3 and the extreme values equal distance from the median. Plotting the histogram of the residuals : We can see the distribution is not symmetric about the mean, however the model is significant.
 
 ```{r}
 hist(linear_model$residuals)
+
 ```
 
 The summary(Linear_model) command will provide the information on the coefficients, R-squared value, p-values and other information about the model. The p-value is used to check the significance of predictors. If p-value is less than 0.05, it means the predictor is significant else the predictor does not contribute to the model in a meaningful way
@@ -230,8 +239,7 @@ library(jtools)
 summ(linear_model, confint = TRUE, digits = 3)
 ```
 
-To display the confidence intervals on the scatter plot change the 'se' argument to true.
-The command 'geom_smooth()' uses the "lm" method by default, which stands for linear model, so it will fit a linear regression line to the data. The "se" argument is set to FALSE to remove the shaded confidence interval around the line.
+To display the confidence intervals on the scatter plot change the 'se' argument to true. The command 'geom_smooth()' uses the "lm" method by default, which stands for linear model, so it will fit a linear regression line to the data. The "se" argument is set to FALSE to remove the shaded confidence interval around the line.
 
 ```{r}
 ggplot(mtcars, aes(x=hp, y=mpg, colour = factor(cyl))) +
@@ -280,21 +288,25 @@ Model Building and Analysis
 
 Multiple linear regression is a statistical technique used to model the relationship between a numerical dependent variable and multiple independent variables.
 
-In this lesson, we will be using the "mtcars" dataset that is built-in to R to demonstrate how to build and analyze multiple linear regression models.
+In this lesson, we will be using the "mtcars" dataset again to demonstrate how to build and analyze multiple linear regression models.
 
-First, let's load the dataset and take a look at the first few rows:
 
-```{r}
-data("mtcars")
-head(mtcars)
-```
-
-To build a multiple linear regression model, we will use the "lm()" function. Let's say we want to predict "mpg" based on "wt", "hp", and "disp". We use the same code as in the linear model with one predictor adn we add in as many variables as we wish. Adding in weight, horsepower and
+To build a multiple linear regression model. We use the same code as in the linear model with one predictor adn we add in as many variables as we wish. Adding in weight, horsepower and disp (Displacement measures overall volume in the engine)
 
 ```{r}
 ml_model <- lm(mpg ~ wt + hp + disp, data = mtcars)
 summary(ml_model)
 ```
+
+Displaying the model output in a use friendly way
+
+```{r}
+library(jtools)
+summ(ml_model, confint = TRUE, digits = 3)
+```
+
+As the p value for disp is >0.05 it is not contributing to the model in a meaningful way, it is not significant.
+
 
 \textbf{Model Evaluation:} To evaluate the performance of the model, we can use various statistical measures such as R-squared, adjusted R-squared, p-values, and t-values.
 
@@ -316,15 +328,15 @@ Model Improvement:
 
 If the model does not meet the assumptions we can try to improve it by removing outliers and influential observations, transforming variables, and adding interaction terms We can also try to include or exclude variables to improve the model by looking at the p-values, t-values, and the R-squared value
 
-Real-world Applications: Multiple linear regression can be used in a variety of real-world applications such as finance, economics, marketing, and engineering.For example, in finance, multiple linear regression can be used to predict stock prices based on various financial indicators such as earnings per share, price-to-earnings ratio, and dividend yield. In marketing, it can be used to predict sales based on advertising expenditure, promotions, and consumer demographics.
 
-This is a basic overview of how to use multiple linear regression models in R. With a little practice, you can quickly master the basics and start using multiple linear regression to make predictions and analyze your data.
+
 
 \section{Polynomial Regression}
 
+Perhaps the relationship between our variables is not best modeled by a line, perhaps a curve would be superior ?
 Here is an example of how to create a polynomial regression model in R using the built-in dataset "mtcars":
 
-```{r}
+```{r, warning=FALSE}
 # Load the necessary libraries
 library(ggplot2)
 library(plyr)
@@ -348,19 +360,28 @@ summ(Poly_model, confint = TRUE, digits = 3)
 
 The above code will fit a polynomial regression model using the "wt" variable as the predictor and "mpg" as the response. The "poly" function is used to specify the degree of the polynomial (2 in this case). The "summary" function is used to print the summary of the model, which includes the coefficients, t-values, and p-values for each term in the model.
 
-To plot the model, you can use the "ggplot" function:
+To plot the model, you can use the "ggplot" function: this time adding a legend,
 
 ```{r}
 # Plot the model
 ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+  
   geom_point() +
-  geom_line(aes(y = predict(Poly_model)), color = "red", linewidth = 1,se=TRUE) +
+  
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2), se = TRUE, aes(color = "Polynomial Regression Line")) +
+  
+  scale_color_manual(name = "", values = c("Polynomial Regression Line" = "blue")) +
+  
+  theme(legend.position = "top")+
+  
   ggtitle("Polynomial Regression Model") +
+  
   xlab("Weight") +
+  
   ylab("Miles per Gallon")
 ```
 
-This will create a scatter plot of the data with the regression line in red.
+This will create a scatter plot of the data with the regression line. 
 
 To create a table of predictions, you can use the "predict" function:
 
@@ -373,6 +394,41 @@ predictions
 ```
 
 This will create a new data frame with the original "wt" values and the corresponding predicted "mpg" values based on the model. You can then use the "head" or "tail" function to view the first or last few rows of the table, or use the "write.csv" function to export the table to a CSV file.
+
+comparing the models
+
+```{r}
+models <- list(linear_model, Poly_model, ml_model)
+eval_metrics <- data.frame(Model = c("Linear", "Polynomial", "Multiple"),
+                           R_squared = sapply(models, function(x) summary(x)$r.squared),
+                           Adj_R_squared = sapply(models, function(x) summary(x)$adj.r.squared),
+                           MSE = sapply(models, function(x) summary(x)$sigma^2))
+eval_metrics
+```
+It's good to know that R-squared is a value between 0 and 1 that represents the proportion of variance in the response variable that is explained by the predictor variables. A higher R-squared value indicates a better fit. The adjusted R-squared takes into account the number of predictor variables in the model and adjusts the R-squared accordingly. MSE is a measure of the average difference between the predicted values and the actual values. A lower MSE indicates a better fit.
+
+Finally, we can create a plot to help visualize the different models and make a decision on which one is the best fit.
+
+
+```{r}
+ggplot(data = mtcars, aes(x = wt, y = mpg)) +
+  
+  geom_point() +
+  
+  geom_smooth(method = "lm", formula = y ~ poly(x, 2), se = TRUE, color = "Blue") +
+  
+  geom_smooth(method="lm", se=FALSE, color="red")+
+
+  
+  
+  ggtitle("Polynomial / Linear Regression Models") +
+  
+  xlab("Weight") +
+  
+  ylab("Miles per Gallon")
+
+```
+
 
 \section{Logistic}
 
