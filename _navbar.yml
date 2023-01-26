@@ -12,7 +12,7 @@ left:
        - text: "Intro to working with data in R "
          href: ./project1.html
        - text: "Regression Models with R"
-         href: ./project2.html
+         href: ./intro_PA_with_R_p2.html
   - text: "Contact"
     href: ./contact.html
 right:
