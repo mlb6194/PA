@@ -112,15 +112,15 @@ ggplot(mtcars, aes(x=hp, y=mpg, colour = factor(cyl))) +
 
 ```{r}
 # Predict mpg for a range of weights
-predicted_mpg <- predict(linear_model, data.frame(hp = seq(95, 250, by =5)))
-predicted_mpg
+Linear_predict_mpg <- predict(linear_model, data.frame(hp = seq(95, 250, by =5)))
+
 ```
 
-Combine original data with predicted values
+Combine original data set with predicted values
 
 ```{r}
 # Combine original data with predicted values
-mtcars_with_predictions <- cbind(mtcars, predicted_mpg)
+mtcars_with_predictions <- cbind(mtcars, Linear_predict_mpg)
 ```
 
 This will display the first few rows of the combined data, including the original mpg values and the predicted mpg values for the range of weights specified.
@@ -132,7 +132,7 @@ mtcars_with_predictions
 View the model predictions only
 
 ```{r}
-mtcars_with_predictions$predicted_mpg
+mtcars_with_predictions$Linear_predict_mpg
 ```
 
 Alternatively, we can use the data.frame() function to create a new data frame with the original data and the predicted values, and then use the View() function to display the data in a table format. For example:
@@ -140,7 +140,7 @@ Alternatively, we can use the data.frame() function to create a new data frame w
 Create a new data frame with the original data and the predicted values
 
 ```{r}
-mtcars_with_predictions <- data.frame(mtcars, predicted_mpg)
+mtcars_with_predictions <- data.frame(mtcars, Linear_predict_mpg)
 ```
 
 Use View() function to display the data in a table format
@@ -167,7 +167,7 @@ predict(linear_model, data.frame(hp = seq(2, 5, by = 0.1)))
 Additionally, the predict() command can also include the interval predictions, by including the argument interval = "confidence" or interval = "prediction".
 
 ```{r}
-predict(linear_model, newdata = data.frame(hp = 120), interval = "confidence")
+predict(linear_model, newdata = data.frame(hp = 300), interval = "confidence")
 ```
 
 ```{r}
@@ -278,6 +278,8 @@ Or remove model information:
 summ(linear_model, model.info = FALSE, digits = 3)
 ```
 
+
+
 ```{=tex}
 \newpage
 \section{Mulitple Linear Regression}
@@ -289,7 +291,6 @@ Model Building and Analysis
 Multiple linear regression is a statistical technique used to model the relationship between a numerical dependent variable and multiple independent variables.
 
 In this lesson, we will be using the "mtcars" dataset again to demonstrate how to build and analyze multiple linear regression models.
-
 
 To build a multiple linear regression model. We use the same code as in the linear model with one predictor adn we add in as many variables as we wish. Adding in weight, horsepower and disp (Displacement measures overall volume in the engine)
 
@@ -305,8 +306,7 @@ library(jtools)
 summ(ml_model, confint = TRUE, digits = 3)
 ```
 
-As the p value for disp is >0.05 it is not contributing to the model in a meaningful way, it is not significant.
-
+As the p value for disp is \>0.05 it is not contributing to the model in a meaningful way, it is not significant.
 
 \textbf{Model Evaluation:} To evaluate the performance of the model, we can use various statistical measures such as R-squared, adjusted R-squared, p-values, and t-values.
 
@@ -328,13 +328,11 @@ Model Improvement:
 
 If the model does not meet the assumptions we can try to improve it by removing outliers and influential observations, transforming variables, and adding interaction terms We can also try to include or exclude variables to improve the model by looking at the p-values, t-values, and the R-squared value
 
-
-
-
 \section{Polynomial Regression}
 
-Perhaps the relationship between our variables is not best modeled by a line, perhaps a curve would be superior ?
-Here is an example of how to create a polynomial regression model in R using the built-in dataset "mtcars":
+# Polynomial Regression
+
+Perhaps the relationship between our variables is not best modeled by a line, perhaps a curve would be superior ? Here is an example of how to create a polynomial regression model in R using the built-in dataset "mtcars":
 
 ```{r, warning=FALSE}
 # Load the necessary libraries
@@ -355,7 +353,7 @@ or as above
 
 ```{r}
 library(jtools)
-summ(Poly_model, confint = TRUE, digits = 3)
+summ(Poly_model, confint = TRUE, digits = 5)
 ```
 
 The above code will fit a polynomial regression model using the "wt" variable as the predictor and "mpg" as the response. The "poly" function is used to specify the degree of the polynomial (2 in this case). The "summary" function is used to print the summary of the model, which includes the coefficients, t-values, and p-values for each term in the model.
@@ -381,21 +379,22 @@ ggplot(data = mtcars, aes(x = wt, y = mpg)) +
   ylab("Miles per Gallon")
 ```
 
-This will create a scatter plot of the data with the regression line. 
+This will create a scatter plot of the data with the regression line.
 
 To create a table of predictions, you can use the "predict" function:
 
 ```{r}
 # Create a table of predictions
-predictions <- data.frame(wt = mtcars$wt,
-                         mpg = predict(Poly_model))
+predictions <- data.frame(hp= mtcars$hp ,mpg = mtcars$mpg,
+                        
+                         predicted_mpg = predict(Poly_model))
 
 predictions
 ```
 
 This will create a new data frame with the original "wt" values and the corresponding predicted "mpg" values based on the model. You can then use the "head" or "tail" function to view the first or last few rows of the table, or use the "write.csv" function to export the table to a CSV file.
 
-comparing the models
+# Comparing the models
 
 ```{r}
 models <- list(linear_model, Poly_model, ml_model)
@@ -405,10 +404,10 @@ eval_metrics <- data.frame(Model = c("Linear", "Polynomial", "Multiple"),
                            MSE = sapply(models, function(x) summary(x)$sigma^2))
 eval_metrics
 ```
+
 It's good to know that R-squared is a value between 0 and 1 that represents the proportion of variance in the response variable that is explained by the predictor variables. A higher R-squared value indicates a better fit. The adjusted R-squared takes into account the number of predictor variables in the model and adjusts the R-squared accordingly. MSE is a measure of the average difference between the predicted values and the actual values. A lower MSE indicates a better fit.
 
 Finally, we can create a plot to help visualize the different models and make a decision on which one is the best fit.
-
 
 ```{r}
 ggplot(data = mtcars, aes(x = wt, y = mpg)) +
@@ -428,7 +427,6 @@ ggplot(data = mtcars, aes(x = wt, y = mpg)) +
   ylab("Miles per Gallon")
 
 ```
-
 
 \section{Logistic}
 
