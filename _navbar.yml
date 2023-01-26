@@ -1,0 +1,19 @@
+name: "Mywebsite"
+title: "My new website"
+type: inverse
+left:
+  - text: "About me"
+    menu:
+      - text: "Learn more about me"
+        href: ./aboutme.html
+  - text: "Courses"
+    menu:
+       - text: "Intro to working with data in R "
+         href: ./project1.html
+       - text: "Regression Models with R"
+         href: ./project2.html
+  - text: "Contact"
+    href: ./contact.html
+right:
+  - icon: fa-github fa-lg
+    href: https://github.com/githubusername/mywebsite
